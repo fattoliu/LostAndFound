@@ -1,10 +1,15 @@
 <template>
-    <div class="home"></div>
+    <div class="home">
+        <bottom-navigation />
+    </div>
 </template>
 <script>
+import BottomNavigation from './components/BottomNavigation'
 export default {
     name: 'home',
-    components: {}
+    components: {
+        BottomNavigation
+    }
 }
 </script>
 <style lang="less" scoped>
