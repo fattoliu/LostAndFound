@@ -1,0 +1,69 @@
+{
+    "editor.fontSize": 10,
+    "editor.tabSize": 4, //制表符符号eslint
+    "editor.formatOnPaste": true,
+    "editor.formatOnSave": true,
+    "editor.lineNumbers": "on", //开启行数提示
+    "editor.quickSuggestions": { //开启自动显示建议
+        "other": true,
+        "comments": true,
+        "strings": true
+    },
+    "git.autofetch": true,
+    "vetur.validation.template": false,
+    "emmet.includeLanguages": {
+        "vue-html": "html"
+    },
+    "emmet.triggerExpansionOnTab": true,
+    "workbench.editor.showTabs": true,
+    "workbench.statusBar.visible": true,
+    "git.enableSmartCommit": true,
+    "git.confirmSync": false,
+    "docthis.authorName": "fattoliu",
+    "docthis.includeAuthorTag": true,
+    "docthis.includeDescriptionTag": true,
+    "vsicons.dontShowNewVersionMessage": true,
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        //开启对.vue文件中错误的检查
+        "javascript",
+        "javascriptreact",
+        {
+            "language": "html",
+            "autoFix": true
+        },
+        {
+            "language": "vue",
+            "autoFix": true
+        }
+    ],
+    "vetur.format.defaultFormatterOptions": {
+        "js-beautify-html": {
+            "wrap_attributes": "force-expand-multiline"
+        },
+        "prettyhtml": {
+            "printWidth": 100,
+            "singleQuote": false,
+            "wrapAttributes": false,
+            "sortAttributes": false
+        },
+        "prettier": {
+            "semi": false, // 分号
+            "bracketSpacing": true, // 对象中的空格： test: { foo: true }
+            "singleQuote": true, // 单引号
+            "tabWidth": 4,
+        }
+    },
+    "prettier.eslintIntegration": true,
+    "prettier.semi": false,
+    "prettier.singleQuote": true,
+    "beautify.tabSize": 4,
+    "prettier.tabWidth": 4,
+    "vetur.format.options.tabSize": 4,
+    "vetur.format.defaultFormatter.html": "js-beautify-html", //格式化.vue中html
+    "vetur.format.defaultFormatter.js": "vscode-typescript",
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true, //让函数(名)和后面的括号之间加个空格
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": true,
+    "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": true,
+}
