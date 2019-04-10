@@ -1,56 +1,69 @@
 import Storage from '@/storage'
-import { login, logout } from '@/api/user'
+import {
+    login,
+    logout
+} from '@/api/user'
 
-import { setToken, getToken } from '@/libs/utils'
+import {
+    setToken,
+    getToken
+} from '@/libs/utils'
 
 export default {
-  state: {
-    userId: Storage.get('userId'),
-    userName: Storage.get('userName'),
-    token: getToken()
-  },
-  mutations: {
-    setToken (state, token) {
-      state.token = token
-      setToken(token)
+    state: {
+        accountId: Storage.get( 'accountId' ),
+        loginType: Storage.get( 'loginType' ),
+        loginName: Storage.get( 'loginName' )
     },
-    setUserName (state, userName) {
-      state.userName = userName
-      Storage.set('userName', userName)
+    mutations: {
+        setAccountId( state, accountId ) {
+            state.accountId = accountId
+            Storage.set( 'accountId', accountId )
+        },
+        setLoginType( state, loginType ) {
+            state.loginType = loginType
+            Storage.set( 'loginType', loginType )
+        },
+        setLoginName( state, loginName ) {
+            state.loginName = loginName
+            Storage.set( 'loginName', loginName )
+        }
     },
-    setUserId (state, userId) {
-      state.userId = userId
-      Storage.set('userId', userId)
+    actions: {
+        handleLogin( {
+            commit
+        }, {
+            loginName,
+            password
+        } ) {
+            loginName = loginName.trim()
+            return new Promise( ( resolve, reject ) => {
+                login( {
+                    loginName,
+                    password
+                } ).then( res => {
+                    commit( 'setAccountId', res.accountid )
+                    commit( 'setLoginType', res.logintype )
+                    commit( 'setLoginName', loginName )
+                    resolve( res )
+                } ).catch( err => {
+                    reject( err )
+                } )
+            } )
+        },
+        handleLogout( {
+            commit
+        } ) {
+            return new Promise( ( resolve, reject ) => {
+                logout().then( () => {
+                    commit( 'setToken', '' )
+                    commit( 'setUserName', '' )
+                    commit( 'setUserId', '' )
+                    resolve()
+                } ).catch( err => {
+                    reject( err )
+                } )
+            } )
+        }
     }
-  },
-  actions: {
-    handleLogin ({ commit }, { userName, password }) {
-      userName = userName.trim()
-      return new Promise((resolve, reject) => {
-        login({
-          userName,
-          password
-        }).then(res => {
-          commit('setToken', res.token)
-          commit('setUserName', res.userName)
-          commit('setUserId', res.userId)
-          resolve(res)
-        }).catch(err => {
-          reject(err)
-        })
-      })
-    },
-    handleLogout ({ commit }) {
-      return new Promise((resolve, reject) => {
-        logout().then(() => {
-          commit('setToken', '')
-          commit('setUserName', '')
-          commit('setUserId', '')
-          resolve()
-        }).catch(err => {
-          reject(err)
-        })
-      })
-    }
-  }
 }

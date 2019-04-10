@@ -1,20 +1,23 @@
 import request from '@/request'
 
-export const login = ({ userName, password }) => {
-  const data = {
-    userName,
+export const login = ( {
+    loginName,
     password
-  }
-  return request({
-    url: '/login',
-    data,
-    method: 'post'
-  })
+} ) => {
+    const data = {
+        'loginname': loginName,
+        'passwd': password
+    }
+    return request( {
+        url: '/mobile_swzl/login.action',
+        data,
+        method: 'post'
+    } )
 }
 
 export const logout = () => {
-  return request({
-    url: '/logout',
-    method: 'post'
-  })
+    return request( {
+        url: '/logout',
+        method: 'post'
+    } )
 }
