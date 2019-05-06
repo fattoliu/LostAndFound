@@ -1,6 +1,6 @@
 {
-    "name": "tjservice",
-    "version": "0.1.0",
+    "name": "lostfound",
+    "version": "1.0.0",
     "server": "http://119.23.233.219:8080/",
     "devServer": "/api/",
     "private": true,

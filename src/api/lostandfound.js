@@ -27,3 +27,11 @@ export const operation = (data) => {
     method: 'post'
   })
 }
+
+export const getShortUrl = (data) => {
+  return request({
+    url: '/mobile_swzl/getreturn.action',
+    data,
+    method: 'post'
+  })
+}

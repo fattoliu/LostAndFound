@@ -141,12 +141,12 @@ export default {
     methods: {
         ...mapMutations(["setLostDetail"]),
         toDetail(item) {
-            if (this.$store.state.user.accountId) {
-                this.$store.commit("setLostDetail", item)
-                this.$router.push({ name: "lostDetails", params: { code: item.prodncode } })
-            } else {
-                this.$router.push({ name: "login", query: { verify: true } })
-            }
+            // if (this.$store.state.user.accountId) {
+            this.$store.commit("setLostDetail", item)
+            this.$router.push({ name: "lostDetails", params: { code: item.prodncode } })
+            // } else {
+            // this.$router.push({ name: "login", query: { verify: true } })
+            // }
         },
         getUrl(item) {
             if (item.imglist && item.imglist[0]) {
@@ -196,7 +196,6 @@ export default {
                 .then(result => {
                     this.loading = false
                     this.pageIndex++
-                    console.log(result)
                     this.lostList = result.rows
                 })
                 .catch(err => {

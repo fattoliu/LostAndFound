@@ -1,6 +1,6 @@
 <template>
     <div class="page-home">
-        <toolbar ref="toolbar" :showBack="false" :toolbarTitle="title" :showSearch="showSearchIcon()" @onSearchPressed="generateUrl"/>
+        <toolbar ref="toolbar" :showBack="false" :toolbarTitle="title" :showSearch="showSearchIcon()" @onSearchPressed="generateAndCopyUrl"/>
         <!-- 单页面内路由 view -->
         <router-view class="content-container" ref="content"/>
         <!-- 底部导航栏 -->
@@ -21,21 +21,33 @@
                 <span slot="label">设置</span>
             </tabbar-item>
         </tabbar>
+        <div v-transfer-dom>
+            <loading :show="loading" :text="loadgingMsg"></loading>
+        </div>
     </div>
 </template>
 <script>
-import { Tabbar, TabbarItem } from "vux"
+import { Tabbar, TabbarItem, Loading, TransferDomDirective as TransferDom } from "vux"
 import Toolbar from "@/components/Toolbar.vue"
 import packageInfo from "../../package.json"
+import { getShortUrl } from "@/api/lostandfound"
 export default {
     name: "home",
+    directives: {
+        TransferDom
+    },
     components: {
         Tabbar,
         TabbarItem,
-        Toolbar
+        Toolbar,
+        Loading
     },
     data() {
         return {
+            shorturl: "",
+            timerId: 0,
+            loadgingMsg: "加载中...",
+            loading: false,
             title: "",
             allowPublish: this.$store.state.user.loginType === 1,
             publishLink: {
@@ -64,9 +76,11 @@ export default {
                 this.title = "设置"
             }
         },
-        generateUrl() {
-            var _this = this
-            console.log(this.$store.state.route.path)
+
+        /**
+         * 生成短链接，并且复制到剪切板
+         */
+        generateAndCopyUrl() {
             let category = this.$refs.content.categoryKey === "" ? 0 : this.$refs.content.categoryKey
             let status = this.$refs.content.statusKey === "" ? 0 : this.$refs.content.statusKey
             let time = this.$refs.content.timeKey === "" ? 0 : this.$refs.content.timeKey
@@ -77,16 +91,48 @@ export default {
             } else {
                 targetUrl = location.href.slice(0, location.href.length - 5) + category + "/" + status + "/" + time
             }
-            this.$copyText(targetUrl).then(
-                function(e) {
-                    _this.$vux.toast.show({
-                        text: "链接已复制至剪切板！"
-                    })
-                },
-                function(e) {
-                    _this.$vux.toast.text("复制失败，请重试...")
+            this.loadgingMsg = "正在生成分享链接..."
+            this.loading = true
+            // 开启定时轮询检测 short url 的值， 500 毫秒执行一次，直到交易返回该值，然后进行复制操作
+            this.timerId = window.setInterval(() => {
+                // 有值时才进行复制操作
+                if (this.shorturl !== "") {
+                    this.$copyText(this.shorturl).then(
+                        () => {
+                            // 复制成功后，清除定时轮询任务
+                            this.clearInterval()
+                            this.shorturl = ""
+                            this.$vux.toast.show({
+                                text: "链接已复制至剪切板！"
+                            })
+                        },
+                        () => {
+                            // 复制失败，记得清除定时轮询任务
+                            this.clearInterval()
+                            this.shorturl = ""
+                            this.$vux.toast.text("复制失败，请重试...")
+                        }
+                    )
                 }
-            )
+            }, 500)
+            // 向服务器发起生成短链接请求
+            getShortUrl({ geturl: targetUrl })
+                .then(result => {
+                    this.loading = false
+                    let obj = JSON.parse(result.returnurl)
+                    if (obj.urls && obj.urls[0] && obj.urls[0].url_short) {
+                        this.shorturl = obj.urls[0].url_short
+                    } else {
+                        this.$vux.toast.text("分享链接生成失败！")
+                    }
+                })
+                .catch(err => {
+                    this.loading = false
+                    this.$vux.toast.text(err.msg || err.message || err || "未知错误")
+                })
+        },
+        clearInterval() {
+            window.clearInterval(this.timerId)
         },
         showSearchIcon() {
             return this.$store.state.route.name === "lostList"
